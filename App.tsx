@@ -250,31 +250,29 @@ const App: React.FC = () => {
       {/* Reset Overlay */}
       {isResetting && (
         <div className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center space-y-4 animate-pulse">
-           <span className="material-icons-outlined text-rose-500 text-6xl animate-spin">restart_alt</span>
+           <span className="material-symbols-outlined text-rose-500 text-6xl animate-spin">restart_alt</span>
            <h2 className="text-rose-500 font-black tracking-[0.5em] uppercase italic">Wiping Terminal Data...</h2>
         </div>
       )}
 
       {showWelcome && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-500">
-          <div className="bg-[#0b1120] border border-blue-500/20 rounded-[3rem] max-w-lg w-full p-12 shadow-2xl relative overflow-hidden text-center space-y-12">
+          <div className="bg-[#0b1120] border border-blue-500/20 rounded-[3rem] max-w-lg w-full p-12 shadow-2xl relative overflow-hidden text-center space-y-8">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600"></div>
-            <div className="space-y-6 pt-10">
-              <div className="w-20 h-20 bg-blue-600/10 rounded-3xl mx-auto flex items-center justify-center border border-blue-500/20">
-                <span className="material-icons-outlined text-blue-500 text-5xl">terminal</span>
-              </div>
-              <div className="space-y-4">
-                <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Terminal Launch</h2>
-                <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                  High-Frequency Execution Suite. Real-time market impact enabled. Initialize your virtual $100k node.
-                </p>
-              </div>
+            <div className="bg-blue-500/10 w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-blue-400 border border-blue-500/20">
+              <span className="material-symbols-outlined text-4xl">terminal</span>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Execution Terminal</h2>
+              <p className="text-slate-400 text-sm leading-relaxed font-medium">
+                High-Frequency Execution Suite. Real-time market impact enabled. Initialize your virtual $100k node.
+              </p>
             </div>
             <button 
               onClick={() => setShowWelcome(false)}
-              className="w-full py-6 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase tracking-widest text-xs"
+              className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase tracking-widest text-xs"
             >
-              Initialize Node
+              Access Command
             </button>
           </div>
         </div>
@@ -311,13 +309,13 @@ const App: React.FC = () => {
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="absolute -right-4 top-10 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-xl z-50 hover:bg-blue-500 transition-colors"
           >
-            <span className={`material-icons-outlined text-lg transition-transform duration-300 ${isSidebarOpen ? 'rotate-180' : 'rotate-0'}`}>chevron_right</span>
+            <span className={`material-symbols-outlined text-lg transition-transform duration-300 ${isSidebarOpen ? 'rotate-180' : 'rotate-0'}`}>chevron_right</span>
           </button>
 
-          {/* Minimal Header with branding icon */}
-          <div className="flex items-center justify-center pt-8">
-            <div className="w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center border border-slate-800">
-               <span className="material-icons-outlined text-blue-500 text-2xl">insights</span>
+          {/* Icon Header (No text) */}
+          <div className="flex items-center justify-center pt-4">
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-800 p-4 rounded-2xl text-white shadow-2xl shadow-blue-500/20">
+              <span className="material-symbols-outlined text-3xl">terminal</span>
             </div>
           </div>
 
@@ -333,7 +331,7 @@ const App: React.FC = () => {
                 onClick={() => setCurrentPage(item.id)}
                 className={`w-full flex items-center ${isSidebarOpen ? 'justify-start px-6' : 'justify-center px-0'} py-5 rounded-[1.5rem] transition-all font-black text-sm uppercase tracking-[0.15em] relative group ${currentPage === item.id ? 'bg-blue-600 text-white shadow-2xl shadow-blue-600/30' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-900'}`}
               >
-                <span className="material-icons-outlined text-2xl shrink-0">{item.icon}</span>
+                <span className="material-symbols-outlined text-2xl shrink-0">{item.icon}</span>
                 {isSidebarOpen && <span className="ml-6 transition-opacity duration-300">{item.label}</span>}
               </button>
             ))}
@@ -368,7 +366,7 @@ const App: React.FC = () => {
                onClick={handleResetClick}
                className={`w-full mt-6 flex items-center justify-center ${isSidebarOpen ? 'gap-3 py-3 px-4' : 'gap-0 p-3'} border rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] transition-all group ${resetConfirm ? 'bg-rose-600 text-white border-rose-500 shadow-lg shadow-rose-600/30' : 'border-rose-500/20 text-rose-500 hover:bg-rose-500/10'}`}
              >
-               <span className={`material-icons-outlined text-sm ${resetConfirm ? 'animate-bounce' : 'group-hover:rotate-180'} transition-transform duration-500`}>
+               <span className={`material-symbols-outlined text-sm ${resetConfirm ? 'animate-bounce' : 'group-hover:rotate-180'} transition-transform duration-500`}>
                 {resetConfirm ? 'warning' : 'restart_alt'}
                </span>
                {isSidebarOpen && <span>{resetConfirm ? 'Confirm Reset' : 'Reset Node'}</span>}
@@ -376,8 +374,8 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        <main className="flex-1 overflow-y-auto bg-[#05080f] relative scroll-smooth custom-scrollbar">
-          <div className="w-full px-6 md:px-12 py-8 mx-auto pb-20 transition-all duration-500 ease-in-out">
+        <main className="flex-1 overflow-y-auto p-6 md:p-12 bg-[#05080f] relative scroll-smooth custom-scrollbar">
+          <div className="max-w-7xl mx-auto pb-20">
             {currentPage === Page.DASHBOARD ? (
               <Dashboard 
                 user={user} 
@@ -389,17 +387,12 @@ const App: React.FC = () => {
                 onTrade={handleTrade}
               />
             ) : currentPage === Page.MARKETS ? (
-              <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
                 <div className="xl:col-span-8 space-y-10">
                    <div className="flex items-center justify-between">
-                     <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center border border-blue-500/20">
-                          <span className="material-icons-outlined text-blue-500 text-2xl">analytics</span>
-                       </div>
-                       <div>
-                         <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Asset Terminal</h2>
-                         <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.3em] mt-1">Active Surveillance</p>
-                       </div>
+                     <div>
+                       <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Asset Terminal</h2>
+                       <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.3em] mt-2">Active Surveillance</p>
                      </div>
                      <div className="flex bg-slate-950 p-2 rounded-2xl border border-slate-900">
                         {['1D', '1W', '1M', 'ALL'].map((r) => (
@@ -445,7 +438,7 @@ const App: React.FC = () => {
                               <td className="p-10 text-right font-mono font-bold text-white text-xl tracking-tighter">${s.price.toFixed(2)}</td>
                               <td className={`p-10 text-right font-black text-sm ${s.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                                 <div className="flex items-center justify-end gap-2">
-                                  <span className="material-icons-outlined text-sm">{s.change >= 0 ? 'trending_up' : 'trending_down'}</span>
+                                  <span className="material-symbols-outlined text-sm">{s.change >= 0 ? 'trending_up' : 'trending_down'}</span>
                                   {Math.abs(s.changePercent).toFixed(2)}%
                                 </div>
                               </td>
@@ -468,13 +461,13 @@ const App: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-[70vh] space-y-10 animate-in zoom-in-95 duration-700">
-                <div className="w-24 h-24 bg-slate-900 rounded-[2rem] border border-slate-800 flex items-center justify-center shadow-2xl">
-                   <span className="material-icons-outlined text-blue-500 text-5xl">hub</span>
+                <div className="w-28 h-28 rounded-[2.5rem] bg-[#0b1120] flex items-center justify-center border border-slate-800 shadow-2xl relative">
+                  <span className="material-symbols-outlined text-blue-500 text-6xl">settings_input_component</span>
                 </div>
                 <div className="text-center space-y-4">
                   <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">{currentPage} NODE</h3>
                   <p className="text-slate-500 font-bold text-sm uppercase tracking-widest max-w-sm mx-auto leading-loose">
-                    Node active. No data rendering required for this module.
+                    High-Frequency Simulation in Progress.
                   </p>
                 </div>
                 <button 
