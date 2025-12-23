@@ -10,6 +10,7 @@ const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [isResetting, setIsResetting] = useState(false);
   const [resetConfirm, setResetConfirm] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const generateOHLC = useCallback((basePrice: number, range: TimeRange, symbol: string): HistoryPoint[] => {
     const pointsCount = range === '1D' ? 60 : range === '1W' ? 80 : 100;
@@ -110,7 +111,6 @@ const App: React.FC = () => {
 
             if (isSlHit || isTpHit) {
               const totalVal = currentStock.price * pos.shares;
-              const typeLabel = isSlHit ? 'AUTO_SELL (STOP-LOSS)' : 'AUTO_SELL (TAKE-PROFIT)';
               
               updatedUser.balance += totalVal;
               updatedUser.portfolio = updatedUser.portfolio.filter(p => p.symbol !== pos.symbol);
@@ -122,7 +122,7 @@ const App: React.FC = () => {
                 price: currentStock.price,
                 timestamp: Date.now()
               }, ...updatedUser.history];
-              updatedUser.xp += 200; // Extra XP for successful automated execution
+              updatedUser.xp += 200; 
               userChanged = true;
             }
           });
@@ -151,7 +151,6 @@ const App: React.FC = () => {
         const existing = prev.portfolio.find(p => p.symbol === symbol);
         let newPortfolio;
         if (existing) {
-          // Update existing with new avg cost and keep/update SL/TP (assuming last trade's SL/TP takes precedence)
           newPortfolio = prev.portfolio.map(p => 
             p.symbol === symbol 
               ? { 
@@ -195,7 +194,6 @@ const App: React.FC = () => {
       });
     }
 
-    // Impact
     const impactFactor = 0.0002; 
     const priceChange = type === 'BUY' ? stock.price * impactFactor * (shares / 5) : -stock.price * impactFactor * (shares / 5);
     const newPrice = Math.max(0.01, stock.price + priceChange);
@@ -219,8 +217,6 @@ const App: React.FC = () => {
 
   const performReset = useCallback(() => {
     setIsResetting(true);
-    
-    // Simulate system wipe
     setTimeout(() => {
       setUser({
         balance: INITIAL_BALANCE,
@@ -230,12 +226,10 @@ const App: React.FC = () => {
         history: [],
         badges: [],
       });
-      
       setStocks(MOCK_STOCKS.map(s => ({
         ...s,
         history: generateOHLC(s.price, selectedRange, s.symbol)
       })));
-      
       setSelectedStockSymbol(MOCK_STOCKS[0].symbol);
       setIsResetting(false);
       setResetConfirm(false);
@@ -247,7 +241,6 @@ const App: React.FC = () => {
       performReset();
     } else {
       setResetConfirm(true);
-      // Auto-cancel confirmation if not clicked again within 3 seconds
       setTimeout(() => setResetConfirm(false), 3000);
     }
   };
@@ -264,22 +257,24 @@ const App: React.FC = () => {
 
       {showWelcome && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-500">
-          <div className="bg-[#0b1120] border border-blue-500/20 rounded-[3rem] max-w-lg w-full p-12 shadow-2xl relative overflow-hidden text-center space-y-8">
+          <div className="bg-[#0b1120] border border-blue-500/20 rounded-[3rem] max-w-lg w-full p-12 shadow-2xl relative overflow-hidden text-center space-y-12">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600"></div>
-            <div className="bg-blue-500/10 w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-blue-400 border border-blue-500/20">
-              <span className="material-icons-outlined text-4xl">rocket_launch</span>
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">StalkMkt Terminal</h2>
-              <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                High-Frequency Execution Suite. Real-time market impact enabled. Initialize your virtual $100k node.
-              </p>
+            <div className="space-y-6 pt-10">
+              <div className="w-20 h-20 bg-blue-600/10 rounded-3xl mx-auto flex items-center justify-center border border-blue-500/20">
+                <span className="material-icons-outlined text-blue-500 text-5xl">terminal</span>
+              </div>
+              <div className="space-y-4">
+                <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Terminal Launch</h2>
+                <p className="text-slate-400 text-sm leading-relaxed font-medium">
+                  High-Frequency Execution Suite. Real-time market impact enabled. Initialize your virtual $100k node.
+                </p>
+              </div>
             </div>
             <button 
               onClick={() => setShowWelcome(false)}
-              className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase tracking-widest text-xs"
+              className="w-full py-6 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase tracking-widest text-xs"
             >
-              Access Command
+              Initialize Node
             </button>
           </div>
         </div>
@@ -309,15 +304,20 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <aside className="w-80 bg-[#070b14] border-r border-slate-900 hidden lg:flex flex-col p-10 space-y-12 shadow-2xl relative z-40">
-          <div className="flex items-center gap-5 group cursor-pointer" onClick={() => setCurrentPage(Page.DASHBOARD)}>
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-800 p-3.5 rounded-2xl text-white shadow-2xl shadow-blue-500/20 group-hover:scale-110 transition-all duration-500 rotate-3 group-hover:rotate-0">
-              <span className="material-icons-outlined text-3xl">insights</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-black text-3xl text-white tracking-tighter uppercase italic leading-none">Stalk</span>
-              <span className="font-bold text-xs text-blue-500 tracking-[0.4em] uppercase leading-none mt-1">Market</span>
+      <div className="flex flex-1 overflow-hidden relative">
+        <aside className={`${isSidebarOpen ? 'w-80' : 'w-24'} bg-[#070b14] border-r border-slate-900 hidden lg:flex flex-col p-6 space-y-12 shadow-2xl relative z-40 transition-all duration-300 ease-in-out`}>
+          {/* Collapse Toggle */}
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="absolute -right-4 top-10 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-xl z-50 hover:bg-blue-500 transition-colors"
+          >
+            <span className={`material-icons-outlined text-lg transition-transform duration-300 ${isSidebarOpen ? 'rotate-180' : 'rotate-0'}`}>chevron_right</span>
+          </button>
+
+          {/* Minimal Header with branding icon */}
+          <div className="flex items-center justify-center pt-8">
+            <div className="w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center border border-slate-800">
+               <span className="material-icons-outlined text-blue-500 text-2xl">insights</span>
             </div>
           </div>
 
@@ -331,47 +331,53 @@ const App: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => setCurrentPage(item.id)}
-                className={`w-full flex items-center gap-6 px-6 py-5 rounded-[1.5rem] transition-all font-black text-sm uppercase tracking-[0.15em] relative group ${currentPage === item.id ? 'bg-blue-600 text-white shadow-2xl shadow-blue-600/30 translate-x-2' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-900 hover:translate-x-1'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'justify-start px-6' : 'justify-center px-0'} py-5 rounded-[1.5rem] transition-all font-black text-sm uppercase tracking-[0.15em] relative group ${currentPage === item.id ? 'bg-blue-600 text-white shadow-2xl shadow-blue-600/30' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-900'}`}
               >
-                <span className="material-icons-outlined text-2xl">{item.icon}</span>
-                {item.label}
+                <span className="material-icons-outlined text-2xl shrink-0">{item.icon}</span>
+                {isSidebarOpen && <span className="ml-6 transition-opacity duration-300">{item.label}</span>}
               </button>
             ))}
           </nav>
 
-          <div className="bg-slate-900/40 p-6 rounded-[2.5rem] border border-slate-800/50 backdrop-blur-2xl">
-             <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-500 to-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-2xl uppercase">
-                  {user.level > 1 ? 'AT' : '..'}
+          <div className={`bg-slate-900/40 ${isSidebarOpen ? 'p-6' : 'p-2'} rounded-[2.5rem] border border-slate-800/50 backdrop-blur-2xl transition-all duration-300`}>
+             <div className={`flex items-center ${isSidebarOpen ? 'gap-4 mb-6' : 'justify-center mb-0'} transition-all`}>
+                <div className="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-tr from-blue-500 to-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-2xl uppercase">
+                  AT
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <p className="text-sm font-black text-white tracking-tight truncate w-32">Alex Trader</p>
-                  <p className="text-[10px] text-emerald-500 font-black uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-md mt-1 w-fit">LVL {user.level}</p>
-                </div>
+                {isSidebarOpen && (
+                  <div className="flex flex-col min-w-0">
+                    <p className="text-xs font-black text-white tracking-tight truncate w-32">Alex Trader</p>
+                    <p className="text-[9px] text-emerald-500 font-black uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-md mt-1 w-fit">LVL {user.level}</p>
+                  </div>
+                )}
              </div>
-             <div className="w-full bg-slate-800/50 rounded-full h-2.5 mb-3 overflow-hidden shadow-inner p-0.5">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000" 
-                  style={{ width: `${(user.xp % 1000) / 10}%` }}
-                ></div>
-             </div>
-             <p className="text-[9px] text-slate-600 text-center uppercase tracking-[0.4em] font-black">{user.xp % 1000} / 1000 XP</p>
              
-             {/* Integrated Reset Button */}
+             {isSidebarOpen && (
+               <>
+                 <div className="w-full bg-slate-800/50 rounded-full h-2 mb-3 overflow-hidden shadow-inner p-0.5 mt-4">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000" 
+                      style={{ width: `${(user.xp % 1000) / 10}%` }}
+                    ></div>
+                 </div>
+                 <p className="text-[8px] text-slate-600 text-center uppercase tracking-[0.4em] font-black">{user.xp % 1000} / 1000 XP</p>
+               </>
+             )}
+             
              <button
                onClick={handleResetClick}
-               className={`w-full mt-6 flex items-center justify-center gap-3 py-3 border rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] transition-all group ${resetConfirm ? 'bg-rose-600 text-white border-rose-500 shadow-lg shadow-rose-600/30' : 'border-rose-500/20 text-rose-500 hover:bg-rose-500/10'}`}
+               className={`w-full mt-6 flex items-center justify-center ${isSidebarOpen ? 'gap-3 py-3 px-4' : 'gap-0 p-3'} border rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] transition-all group ${resetConfirm ? 'bg-rose-600 text-white border-rose-500 shadow-lg shadow-rose-600/30' : 'border-rose-500/20 text-rose-500 hover:bg-rose-500/10'}`}
              >
                <span className={`material-icons-outlined text-sm ${resetConfirm ? 'animate-bounce' : 'group-hover:rotate-180'} transition-transform duration-500`}>
                 {resetConfirm ? 'warning' : 'restart_alt'}
                </span>
-               {resetConfirm ? 'Confirm Reset' : 'Reset Terminal'}
+               {isSidebarOpen && <span>{resetConfirm ? 'Confirm Reset' : 'Reset Node'}</span>}
              </button>
           </div>
         </aside>
 
-        <main className="flex-1 overflow-y-auto p-6 md:p-12 bg-[#05080f] relative scroll-smooth custom-scrollbar">
-          <div className="max-w-7xl mx-auto pb-20">
+        <main className="flex-1 overflow-y-auto bg-[#05080f] relative scroll-smooth custom-scrollbar">
+          <div className="w-full px-6 md:px-12 py-8 mx-auto pb-20 transition-all duration-500 ease-in-out">
             {currentPage === Page.DASHBOARD ? (
               <Dashboard 
                 user={user} 
@@ -383,12 +389,17 @@ const App: React.FC = () => {
                 onTrade={handleTrade}
               />
             ) : currentPage === Page.MARKETS ? (
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+              <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
                 <div className="xl:col-span-8 space-y-10">
                    <div className="flex items-center justify-between">
-                     <div>
-                       <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Asset Terminal</h2>
-                       <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.3em] mt-2">Active Surveillance</p>
+                     <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center border border-blue-500/20">
+                          <span className="material-icons-outlined text-blue-500 text-2xl">analytics</span>
+                       </div>
+                       <div>
+                         <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Asset Terminal</h2>
+                         <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.3em] mt-1">Active Surveillance</p>
+                       </div>
                      </div>
                      <div className="flex bg-slate-950 p-2 rounded-2xl border border-slate-900">
                         {['1D', '1W', '1M', 'ALL'].map((r) => (
@@ -457,13 +468,13 @@ const App: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-[70vh] space-y-10 animate-in zoom-in-95 duration-700">
-                <div className="w-28 h-28 rounded-[2.5rem] bg-[#0b1120] flex items-center justify-center border border-slate-800 shadow-2xl relative">
-                  <span className="material-icons-outlined text-blue-500 text-6xl">settings_input_component</span>
+                <div className="w-24 h-24 bg-slate-900 rounded-[2rem] border border-slate-800 flex items-center justify-center shadow-2xl">
+                   <span className="material-icons-outlined text-blue-500 text-5xl">hub</span>
                 </div>
                 <div className="text-center space-y-4">
                   <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">{currentPage} NODE</h3>
                   <p className="text-slate-500 font-bold text-sm uppercase tracking-widest max-w-sm mx-auto leading-loose">
-                    High-Frequency Simulation in Progress.
+                    Node active. No data rendering required for this module.
                   </p>
                 </div>
                 <button 
